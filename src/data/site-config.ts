@@ -4,7 +4,7 @@ export const SITE_CONFIG = {
   slogan: "Equipamentos médico-hospitalares e assistência técnica especializada",
   description:
     "Representação comercial de equipamentos médico-hospitalares e assistência técnica especializada para clínicas, hospitais e centros de diagnóstico no Espírito Santo e região.",
-  url: process.env.NEXT_PUBLIC_SITE_URL || "https://medicalplus.com.br",
+  url: process.env.NEXT_PUBLIC_SITE_URL || "https://www.medicalplus.com.br",
   contact: {
     name: "Claudiomiro Marques Caetano",
     role: "Especialista Comercial e Técnico",

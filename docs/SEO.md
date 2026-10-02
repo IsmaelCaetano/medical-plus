@@ -6,10 +6,10 @@ Este documento descreve a arquitetura de SEO, palavras-chave prioritárias, estr
 
 ## 1. Arquitetura Canônica e Domínio
 
-- **Domínio Canônico:** `https://medicalplus.com.br`
+- **Domínio Canônico:** `https://www.medicalplus.com.br`
 - **Protocolo:** HTTPS obrigatório
-- **Redirecionamento:** `www.medicalplus.com.br` -> `medicalplus.com.br` (configurado em `next.config.ts`)
-- **Variável de Ambiente:** `NEXT_PUBLIC_SITE_URL=https://medicalplus.com.br` (com fallback seguro em código para evitar URLs de preview em metadados de produção)
+- **Redirecionamento:** `medicalplus.com.br` -> `www.medicalplus.com.br` (gerenciado na borda pela Vercel)
+- **Variável de Ambiente:** `NEXT_PUBLIC_SITE_URL=https://www.medicalplus.com.br` (com fallback seguro em código para evitar URLs de preview em metadados de produção)
 
 ---
 
