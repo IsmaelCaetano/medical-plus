@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Hero } from "@/components/Hero";
+import { MedicalCarousel } from "@/components/home/MedicalCarousel";
 import { BrandCard } from "@/components/BrandCard";
 import { ServiceCard } from "@/components/ServiceCard";
 import { CTASection } from "@/components/CTASection";
@@ -30,7 +31,10 @@ export default function HomePage() {
       {/* 1. Hero Section */}
       <Hero />
 
-      {/* 2. Principais Soluções */}
+      {/* 2. Carrossel Premium de Equipamentos & Soluções */}
+      <MedicalCarousel />
+
+      {/* 3. Principais Soluções */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-12">
           <span className="text-xs font-bold uppercase tracking-wider text-brand-darkGreen bg-brand-softLime px-3 py-1 rounded-full border border-brand-border">
