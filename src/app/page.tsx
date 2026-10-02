@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Hero } from "@/components/Hero";
 import { MedicalCarousel } from "@/components/home/MedicalCarousel";
 import { BrandCard } from "@/components/BrandCard";
 import { ServiceCard } from "@/components/ServiceCard";
@@ -16,8 +15,6 @@ import {
   Users,
   ShieldCheck,
   Compass,
-  Building2,
-  HeartHandshake,
   ArrowRight,
   MessageCircle,
 } from "lucide-react";
@@ -27,15 +24,13 @@ export default function HomePage() {
   const serviceList = Object.values(SERVICES);
 
   return (
-    <div className="space-y-16 sm:space-y-24">
-      {/* 1. Hero Section */}
-      <Hero />
-
-      {/* 2. Carrossel Premium de Equipamentos & Soluções */}
+    <div className="pt-3 sm:pt-6 lg:pt-8">
+      {/* 1. Carrossel Principal de Equipamentos & Soluções (Substitui o antigo Hero) */}
       <MedicalCarousel />
 
-      {/* 3. Principais Soluções */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="space-y-16 sm:space-y-24">
+        {/* 2. Principais Soluções */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-12">
           <span className="text-xs font-bold uppercase tracking-wider text-brand-darkGreen bg-brand-softLime px-3 py-1 rounded-full border border-brand-border">
             Linhas de Atuação
@@ -353,6 +348,7 @@ export default function HomePage() {
 
       {/* 7. CTA Final */}
       <CTASection />
+      </div>
     </div>
   );
 }

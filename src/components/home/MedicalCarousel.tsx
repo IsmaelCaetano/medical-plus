@@ -3,22 +3,15 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
 import { CAROUSEL_SLIDES, CarouselSlide } from "@/data/carousel";
-import { SITE_CONFIG, getWhatsAppLink } from "@/data/site-config";
-import {
-  ChevronLeft,
-  ChevronRight,
-  MessageCircle,
-  CheckCircle2,
-  Sparkles,
-  Pause,
-  Play,
-} from "lucide-react";
+import { getWhatsAppLink } from "@/data/site-config";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export function MedicalCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const touchStartXRef = useRef<number | null>(null);
+  const touchDeltaXRef = useRef<number>(0);
+  const wasDraggedRef = useRef<boolean>(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const totalSlides = CAROUSEL_SLIDES.length;
@@ -36,7 +29,7 @@ export function MedicalCarousel() {
     setIsPaused(true);
   };
 
-  // Autoplay logic (6 seconds) with prefers-reduced-motion check
+  // Autoplay (6.0 segundos) com pausa no hover/interação e respeito a prefers-reduced-motion
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -52,56 +45,69 @@ export function MedicalCarousel() {
     return () => clearInterval(timer);
   }, [isPaused, nextSlide]);
 
-  // Keyboard navigation
+  // Navegação por teclado (quando focado)
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "ArrowLeft") {
+      e.preventDefault();
       prevSlide();
       setIsPaused(true);
     } else if (e.key === "ArrowRight") {
+      e.preventDefault();
       nextSlide();
       setIsPaused(true);
     }
   };
 
-  // Swipe handling for touch devices
-  const minSwipeDistance = 50;
-
+  // Suporte a swipe no mobile sem disparar o clique do link acidentalmente
   const onTouchStart = (e: React.TouchEvent) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
+    touchStartXRef.current = e.targetTouches[0].clientX;
+    touchDeltaXRef.current = 0;
+    wasDraggedRef.current = false;
   };
 
   const onTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-
-    if (isLeftSwipe) {
-      nextSlide();
-      setIsPaused(true);
-    } else if (isRightSwipe) {
-      prevSlide();
-      setIsPaused(true);
+    if (touchStartXRef.current !== null) {
+      touchDeltaXRef.current = e.targetTouches[0].clientX - touchStartXRef.current;
+      if (Math.abs(touchDeltaXRef.current) > 10) {
+        wasDraggedRef.current = true;
+      }
     }
   };
 
-  const currentSlide: CarouselSlide = CAROUSEL_SLIDES[currentIndex];
+  const onTouchEnd = () => {
+    const minSwipeDistance = 45;
+    if (Math.abs(touchDeltaXRef.current) > minSwipeDistance) {
+      if (touchDeltaXRef.current > minSwipeDistance) {
+        prevSlide();
+      } else {
+        nextSlide();
+      }
+      setIsPaused(true);
+    }
+    // Mantém wasDragged ativo por 450ms para engolir qualquer clique fantasma sintetizado no mobile
+    setTimeout(() => {
+      wasDraggedRef.current = false;
+    }, 450);
+    touchStartXRef.current = null;
+    touchDeltaXRef.current = 0;
+  };
+
+  const handleLinkClick = (e: React.MouseEvent) => {
+    if (wasDraggedRef.current) {
+      e.preventDefault();
+    }
+  };
 
   return (
     <section
-      aria-label="Carrossel de Equipamentos e Soluções Médicas"
-      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6"
+      aria-label="Carrossel Principal de Equipamentos Médicos e Serviços"
+      className="w-full max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8 mb-12 sm:mb-16 lg:mb-[72px]"
     >
       <div
         ref={containerRef}
         role="region"
         aria-roledescription="carousel"
-        aria-label="Equipamentos em Destaque"
+        aria-label="Destaques de Equipamentos e Soluções"
         tabIndex={0}
         onKeyDown={handleKeyDown}
         onMouseEnter={() => setIsPaused(true)}
@@ -109,151 +115,112 @@ export function MedicalCarousel() {
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
-        className="relative bg-white rounded-3xl border border-brand-border shadow-md overflow-hidden outline-none focus-visible:ring-2 focus-visible:ring-brand-green/70 transition-all duration-300"
+        className="group relative w-full aspect-[1672/941] rounded-2xl lg:rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow bg-white border border-brand-border/60 outline-none focus-visible:ring-2 focus-visible:ring-brand-green select-none"
       >
-        {/* Slides Container */}
-        <div className="relative min-h-[580px] sm:min-h-[520px] lg:min-h-[460px] flex items-stretch">
-          {CAROUSEL_SLIDES.map((slide, index) => {
-            const isActive = index === currentIndex;
-            return (
-              <div
-                key={slide.id}
-                role="group"
-                aria-roledescription="slide"
-                aria-label={`Slide ${index + 1} de ${totalSlides}: ${slide.title}`}
-                aria-hidden={!isActive}
-                className={`absolute inset-0 w-full h-full flex flex-col lg:flex-row items-stretch transition-opacity duration-700 ease-in-out ${
-                  isActive ? "opacity-100 z-10 pointer-events-auto" : "opacity-0 z-0 pointer-events-none"
-                }`}
+        {/* Slides de Imagem Completa */}
+        {CAROUSEL_SLIDES.map((slide: CarouselSlide, index: number) => {
+          const isActive = index === currentIndex;
+          const whatsappUrl = getWhatsAppLink(slide.whatsappMessage);
+
+          return (
+            <div
+              key={slide.id}
+              role="group"
+              aria-roledescription="slide"
+              aria-label={`Slide ${index + 1} de ${totalSlides}: ${slide.imageAlt}`}
+              aria-hidden={!isActive}
+              className={`absolute inset-0 w-full h-full transition-opacity duration-700 ease-in-out ${
+                isActive
+                  ? "opacity-100 z-10 pointer-events-auto"
+                  : "opacity-0 z-0 pointer-events-none"
+              }`}
+            >
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={handleLinkClick}
+                aria-label={`Solicitar informações sobre ${slide.title} no WhatsApp`}
+                className="block relative w-full h-full cursor-pointer focus-visible:outline-none"
               >
-                {/* Lado Esquerdo / Texto do Slide */}
-                <div className="w-full lg:w-1/2 p-6 sm:p-10 lg:p-12 flex flex-col justify-between order-2 lg:order-1 bg-white">
-                  <div>
-                    {/* Badge de Categoria */}
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-softLime text-brand-darkGreen text-xs font-bold uppercase tracking-wider mb-4 border border-brand-border">
-                      <Sparkles className="w-3.5 h-3.5 text-brand-green" />
-                      <span>{slide.category}</span>
-                    </div>
+                <Image
+                  src={slide.image}
+                  alt={slide.imageAlt}
+                  fill
+                  priority={index === 0}
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 95vw, 1440px"
+                  className="object-contain object-center w-full h-full"
+                />
+              </a>
+            </div>
+          );
+        })}
 
-                    {/* Título */}
-                    <h3 className="text-2xl sm:text-3xl lg:text-3xl xl:text-4xl font-extrabold font-heading text-brand-textMain tracking-tight leading-tight mb-3">
-                      {slide.title}
-                    </h3>
+        {/* Setas de Navegação (Sobrepostas e discretas) */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            prevSlide();
+            setIsPaused(true);
+          }}
+          aria-label="Slide anterior"
+          className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/85 hover:bg-white text-brand-darkGreen border border-brand-border/50 shadow-md backdrop-blur-xs flex items-center justify-center transition-all opacity-80 sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green active:scale-95"
+        >
+          <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+        </button>
 
-                    {/* Descrição */}
-                    <p className="text-sm sm:text-base text-brand-textMuted leading-relaxed mb-5">
-                      {slide.description}
-                    </p>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            nextSlide();
+            setIsPaused(true);
+          }}
+          aria-label="Próximo slide"
+          className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/85 hover:bg-white text-brand-darkGreen border border-brand-border/50 shadow-md backdrop-blur-xs flex items-center justify-center transition-all opacity-80 sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green active:scale-95"
+        >
+          <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+        </button>
 
-                    {/* Bullets */}
-                    <ul className="space-y-2.5 mb-6" aria-label="Destaques técnicos">
-                      {slide.bullets.map((bullet, bIdx) => (
-                        <li key={bIdx} className="flex items-start gap-2.5 text-xs sm:text-sm text-brand-textMain">
-                          <CheckCircle2 className="w-4 h-4 text-brand-green flex-shrink-0 mt-0.5" />
-                          <span className="font-medium">{bullet}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {/* CTA Button */}
-                  <div className="pt-2">
-                    <a
-                      href={getWhatsAppLink(slide.whatsappMessage)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center gap-2.5 bg-brand-green hover:bg-brand-greenHover text-white px-6 py-3.5 rounded-xl text-sm sm:text-base font-bold shadow-sm hover:shadow-md transition-all min-h-[48px] w-full sm:w-auto"
-                    >
-                      <MessageCircle className="w-5 h-5 fill-current flex-shrink-0" />
-                      <span>{slide.cta}</span>
-                    </a>
-                  </div>
-                </div>
-
-                {/* Lado Direito / Imagem do Slide */}
-                <div className="w-full lg:w-1/2 relative bg-gradient-to-br from-brand-bgAlt/60 to-brand-softLime/20 order-1 lg:order-2 flex items-center justify-center p-4 sm:p-6 lg:p-8 min-h-[260px] sm:min-h-[300px] lg:min-h-full">
-                  <div className="relative w-full h-full min-h-[240px] sm:min-h-[280px] lg:min-h-[380px] rounded-2xl overflow-hidden shadow-xs border border-brand-border/40">
-                    <Image
-                      src={slide.image}
-                      alt={slide.imageAlt}
-                      fill
-                      priority={index === 0}
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 620px"
-                      className="object-cover object-center transition-transform duration-700 ease-out hover:scale-102"
-                    />
-                  </div>
-                </div>
-              </div>
+        {/* Indicadores (Dots) na parte inferior central sobrepostos */}
+        <div
+          className="absolute bottom-2.5 sm:bottom-4 left-1/2 -translate-x-1/2 z-20 bg-black/40 backdrop-blur-sm px-3 py-1.5 rounded-full flex items-center gap-1.5 sm:gap-2"
+          role="tablist"
+          aria-label="Seleção de slides"
+        >
+          {CAROUSEL_SLIDES.map((slide, idx) => {
+            const isSelected = idx === currentIndex;
+            return (
+              <button
+                key={slide.id}
+                type="button"
+                role="tab"
+                aria-selected={isSelected}
+                aria-label={`Ir para slide ${idx + 1}: ${slide.title}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  goToSlide(idx);
+                }}
+                className={`rounded-full transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${
+                  isSelected
+                    ? "w-6 sm:w-7 h-2 bg-brand-green"
+                    : "w-2 h-2 bg-white/60 hover:bg-white"
+                }`}
+              />
             );
           })}
         </div>
 
-        {/* Barra de Navegação Inferior / Controles */}
-        <div className="bg-brand-bgAlt/80 border-t border-brand-border/70 px-4 sm:px-8 py-3.5 flex items-center justify-between z-20 relative">
-          {/* Indicadores de Slide */}
-          <div className="flex items-center gap-2" role="tablist" aria-label="Slides do carrossel">
-            {CAROUSEL_SLIDES.map((slide, idx) => {
-              const isSelected = idx === currentIndex;
-              return (
-                <button
-                  key={slide.id}
-                  role="tab"
-                  aria-selected={isSelected}
-                  aria-label={`Ir para slide ${idx + 1}: ${slide.category}`}
-                  onClick={() => goToSlide(idx)}
-                  className={`h-2.5 rounded-full transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green ${
-                    isSelected
-                      ? "w-8 bg-brand-green"
-                      : "w-2.5 bg-brand-border hover:bg-brand-textMuted/40"
-                  }`}
-                />
-              );
-            })}
-          </div>
-
-          {/* Contador e Controles de Seta */}
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-bold font-mono text-brand-darkGreen tracking-wider hidden sm:inline-block">
-              {String(currentIndex + 1).padStart(2, "0")} / {String(totalSlides).padStart(2, "0")}
-            </span>
-
-            {/* Botão Play/Pause para acessibilidade */}
-            <button
-              type="button"
-              onClick={() => setIsPaused((prev) => !prev)}
-              aria-label={isPaused ? "Retomar reprodução automática" : "Pausar reprodução automática"}
-              className="p-1.5 rounded-lg text-brand-textMuted hover:text-brand-darkGreen hover:bg-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green"
-            >
-              {isPaused ? <Play className="w-3.5 h-3.5" /> : <Pause className="w-3.5 h-3.5" />}
-            </button>
-
-            {/* Setas Anterior / Próximo */}
-            <div className="flex items-center gap-1.5">
-              <button
-                type="button"
-                onClick={() => {
-                  prevSlide();
-                  setIsPaused(true);
-                }}
-                aria-label="Slide anterior"
-                className="w-8 h-8 rounded-full bg-white hover:bg-brand-softLime text-brand-textMain hover:text-brand-darkGreen border border-brand-border flex items-center justify-center shadow-2xs transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  nextSlide();
-                  setIsPaused(true);
-                }}
-                aria-label="Próximo slide"
-                className="w-8 h-8 rounded-full bg-white hover:bg-brand-softLime text-brand-textMain hover:text-brand-darkGreen border border-brand-border flex items-center justify-center shadow-2xs transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
+        {/* Contador Discreto no Canto Inferior Direito */}
+        <div
+          aria-hidden="true"
+          className="absolute bottom-2.5 sm:bottom-4 right-3 sm:right-5 z-20 bg-black/40 backdrop-blur-sm text-white/90 text-[10px] sm:text-xs font-mono font-semibold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full hidden sm:block pointer-events-none"
+        >
+          {String(currentIndex + 1).padStart(2, "0")} / {String(totalSlides).padStart(2, "0")}
         </div>
       </div>
     </section>
