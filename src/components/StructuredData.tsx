@@ -1,7 +1,7 @@
 import { SITE_CONFIG } from "@/data/site-config";
 
 interface StructuredDataProps {
-  type: "Organization" | "WebSite" | "Service" | "BreadcrumbList";
+  type: "Organization" | "WebSite" | "Service" | "BreadcrumbList" | "Product" | "LocalBusiness";
   data?: Record<string, unknown>;
 }
 
@@ -17,6 +17,7 @@ export function StructuredData({ type, data = {} }: StructuredDataProps) {
       url: SITE_CONFIG.url,
       logo: `${SITE_CONFIG.url}/brand/medicalplus-logo-horizontal.png`,
       description: SITE_CONFIG.description,
+      telephone: `+${SITE_CONFIG.contact.phoneRaw}`,
       contactPoint: [
         {
           "@type": "ContactPoint",
@@ -27,11 +28,39 @@ export function StructuredData({ type, data = {} }: StructuredDataProps) {
           availableLanguage: ["Portuguese"],
         },
       ],
+      areaServed: {
+        "@type": "State",
+        name: "Espírito Santo",
+      },
       address: {
         "@type": "PostalAddress",
         addressRegion: "ES",
         addressCountry: "BR",
       },
+      ...data,
+    };
+  } else if (type === "LocalBusiness") {
+    schema = {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      name: SITE_CONFIG.name,
+      legalName: SITE_CONFIG.legalName,
+      url: SITE_CONFIG.url,
+      logo: `${SITE_CONFIG.url}/brand/medicalplus-logo-horizontal.png`,
+      image: `${SITE_CONFIG.url}/brand/medicalplus-logo-horizontal.png`,
+      description: SITE_CONFIG.description,
+      telephone: `+${SITE_CONFIG.contact.phoneRaw}`,
+      email: SITE_CONFIG.contact.email,
+      areaServed: {
+        "@type": "State",
+        name: "Espírito Santo",
+      },
+      address: {
+        "@type": "PostalAddress",
+        addressRegion: "ES",
+        addressCountry: "BR",
+      },
+      priceRange: "$$",
       ...data,
     };
   } else if (type === "WebSite") {
@@ -67,6 +96,12 @@ export function StructuredData({ type, data = {} }: StructuredDataProps) {
         "@type": "AdministrativeArea",
         name: "Espírito Santo",
       },
+      ...data,
+    };
+  } else if (type === "Product") {
+    schema = {
+      "@context": "https://schema.org",
+      "@type": "Product",
       ...data,
     };
   }

@@ -13,10 +13,58 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1.0,
     },
     {
-      url: `${baseUrl}/equipamentos-medicos-hospitalares`,
+      url: `${baseUrl}/equipamentos`,
+      lastModified,
+      changeFrequency: "weekly",
+      priority: 0.95,
+    },
+    {
+      url: `${baseUrl}/equipamentos/diagnostico-por-imagem`,
       lastModified,
       changeFrequency: "monthly",
       priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/equipamentos/fujifilm`,
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/mobiliario-hospitalar`,
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/mobiliario-hospitalar/levita`,
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/carbogel`,
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/carbogel/gel-para-ultrassom`,
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/carbogel/aquecedor-de-gel`,
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/equipamentos-medicos-hospitalares`,
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.85,
     },
     {
       url: `${baseUrl}/marcas`,
@@ -46,7 +94,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}/assistencia-tecnica`,
       lastModified,
       changeFrequency: "weekly",
-      priority: 0.9,
+      priority: 0.95,
     },
     {
       url: `${baseUrl}/assistencia-tecnica/ultrassom`,
@@ -88,7 +136,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}/contato`,
       lastModified,
       changeFrequency: "monthly",
-      priority: 0.8,
+      priority: 0.85,
     },
   ];
 }

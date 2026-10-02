@@ -34,6 +34,14 @@ export const SITE_CONFIG = {
       "Olá, Claudiomiro! Vim pelo site da Medical Plus e gostaria de informações sobre assistência técnica em Densitômetro Ósseo.",
     ctAssistance:
       "Olá, Claudiomiro! Vim pelo site da Medical Plus e gostaria de informações sobre assistência técnica em Tomografia Computadorizada.",
+    diagnosticoPorImagem:
+      "Olá, Claudiomiro! Vim pelo site da Medical Plus e gostaria de mais informações sobre equipamentos para diagnóstico por imagem.",
+    mobiliarioHospitalar:
+      "Olá, Claudiomiro! Vim pelo site da Medical Plus e gostaria de informações sobre móveis e mobiliário hospitalar.",
+    gelUltrassom:
+      "Olá, Claudiomiro! Vim pelo site da Medical Plus e gostaria de informações sobre gel para ultrassom Carbogel.",
+    aquecedorGel:
+      "Olá, Claudiomiro! Vim pelo site da Medical Plus e gostaria de informações sobre o aquecedor de gel GELKENT Carbogel.",
   },
 };
 

@@ -10,6 +10,8 @@ import {
   Clock,
   ShieldCheck,
   User,
+  Globe,
+  Mail,
 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -49,6 +51,16 @@ export default function ContatoPage() {
               item: `${SITE_CONFIG.url}/contato`,
             },
           ],
+        }}
+      />
+
+      <StructuredData
+        type="LocalBusiness"
+        data={{
+          name: SITE_CONFIG.name,
+          telephone: `+${SITE_CONFIG.contact.phoneRaw}`,
+          url: SITE_CONFIG.url,
+          email: SITE_CONFIG.contact.email,
         }}
       />
 
@@ -122,6 +134,40 @@ export default function ContatoPage() {
                     <p className="text-brand-textMuted text-xs leading-relaxed">
                       {SITE_CONFIG.contact.region}
                     </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3.5">
+                  <div className="p-2.5 rounded-xl bg-brand-softLime text-brand-darkGreen mt-0.5">
+                    <Globe className="w-5 h-5 text-brand-green" />
+                  </div>
+                  <div>
+                    <span className="block text-xs font-semibold text-brand-textMuted uppercase">
+                      Site Oficial
+                    </span>
+                    <a
+                      href={SITE_CONFIG.url}
+                      className="text-base font-bold text-brand-darkGreen hover:text-brand-green transition-colors"
+                    >
+                      medicalplus.com.br
+                    </a>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3.5">
+                  <div className="p-2.5 rounded-xl bg-brand-softLime text-brand-darkGreen mt-0.5">
+                    <Mail className="w-5 h-5 text-brand-green" />
+                  </div>
+                  <div>
+                    <span className="block text-xs font-semibold text-brand-textMuted uppercase">
+                      E-mail de Contato
+                    </span>
+                    <a
+                      href={`mailto:${SITE_CONFIG.contact.email}`}
+                      className="text-base font-bold text-brand-darkGreen hover:text-brand-green transition-colors break-all"
+                    >
+                      {SITE_CONFIG.contact.email}
+                    </a>
                   </div>
                 </div>
 

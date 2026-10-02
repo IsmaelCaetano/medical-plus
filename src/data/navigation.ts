@@ -8,7 +8,34 @@ export const MAIN_NAV: NavItem[] = [
   { title: "Início", href: "/" },
   {
     title: "Equipamentos",
-    href: "/equipamentos-medicos-hospitalares",
+    href: "/equipamentos",
+    children: [
+      {
+        title: "Todos os Equipamentos",
+        href: "/equipamentos",
+        description: "Visão geral de equipamentos médico-hospitalares no ES",
+      },
+      {
+        title: "Diagnóstico por Imagem",
+        href: "/equipamentos/diagnostico-por-imagem",
+        description: "Radiologia, raio X, mamografia, tomografia e TI médica",
+      },
+      {
+        title: "Soluções Fujifilm",
+        href: "/equipamentos/fujifilm",
+        description: "Sistemas radiológicos e de imagem diagnóstica de alta precisão",
+      },
+      {
+        title: "Mobiliário Hospitalar",
+        href: "/mobiliario-hospitalar",
+        description: "Camas de UTI, macas, poltronas e móveis hospitalares Levita",
+      },
+      {
+        title: "Linha Carbogel",
+        href: "/carbogel",
+        description: "Géis condutores para exames clínicos e aquecedores de gel",
+      },
+    ],
   },
   {
     title: "Marcas",
@@ -68,10 +95,12 @@ export const MAIN_NAV: NavItem[] = [
 
 export const FOOTER_LINKS = {
   solucoes: [
-    { title: "Equipamentos Hospitalares", href: "/equipamentos-medicos-hospitalares" },
-    { title: "Móveis Hospitalares Levita", href: "/marcas/levita" },
-    { title: "Diagnóstico por Imagem Fujifilm", href: "/marcas/fujifilm" },
-    { title: "Géis e Insumos Carbogel", href: "/marcas/carbogel" },
+    { title: "Equipamentos Médicos", href: "/equipamentos" },
+    { title: "Diagnóstico por Imagem", href: "/equipamentos/diagnostico-por-imagem" },
+    { title: "Móveis Hospitalares Levita", href: "/mobiliario-hospitalar/levita" },
+    { title: "Equipamentos Fujifilm", href: "/equipamentos/fujifilm" },
+    { title: "Gel para Ultrassom Carbogel", href: "/carbogel/gel-para-ultrassom" },
+    { title: "Aquecedor de Gel Carbogel", href: "/carbogel/aquecedor-de-gel" },
   ],
   assistencia: [
     { title: "Assistência de Ultrassom", href: "/assistencia-tecnica/ultrassom" },
